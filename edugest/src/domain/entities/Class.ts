@@ -4,10 +4,10 @@ export type Class = {
   id: string;
   schoolId: string;
   name: string;
-  shift: string;
+  shift: Shift;
   academicYear: number;
-  createdAt: number;
-  updateAt: number;
+  createdAt: string;
+  updateAt: string;
 };
 
 export type CreateClassDTO = Pick<Class, "name" | "shift" | "academicYear">;
@@ -20,4 +20,11 @@ export const SHIFT_LABELS: Record<Shift, string> = {
   afternoon: "Vespertino",
   evening: "Noturno",
   full: "Integral",
+};
+
+export const SHIFT_COLORS: Record<Shift, string> = {
+  morning: "warning",
+  afternoon: "success",
+  evening: "info",
+  full: "muted",
 };
