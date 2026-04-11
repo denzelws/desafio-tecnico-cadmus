@@ -2,6 +2,7 @@ export type Shift = "morning" | "afternoon" | "evening" | "full";
 
 export type Class = {
   id: string;
+  schoolId: string;
   name: string;
   shift: string;
   academicYear: number;
