@@ -1,8 +1,9 @@
 import { factory, manyOf, oneOf, primaryKey } from "@mswjs/data";
+import { v4 as uuidv4 } from "uuid";
 
 export const db = factory({
   school: {
-    id: primaryKey(() => crypto.randomUUID()),
+    id: primaryKey(uuidv4),
     name: String,
     address: String,
     createdAt: String,
@@ -11,7 +12,7 @@ export const db = factory({
     classes: manyOf("class"),
   },
   class: {
-    id: primaryKey(() => crypto.randomUUID()),
+    id: primaryKey(uuidv4),
     name: String,
     shift: String,
     academicYear: Number,
