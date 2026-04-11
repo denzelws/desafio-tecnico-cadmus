@@ -1,5 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { Class } from "../../domain/entities/Class";
 
 interface ClassState {
@@ -25,75 +26,88 @@ type ClassStore = ClassState & ClassActions;
 
 export const useClassStore = create<ClassStore>()(
   devtools(
-    (set) => ({
-      classesBySchool: {},
-      isLoading: false,
-      error: null,
-      searchQuery: "",
-      shiftFilter: "",
+    persist(
+      (set) => ({
+        classesBySchool: {},
+        isLoading: false,
+        error: null,
+        searchQuery: "",
+        shiftFilter: "",
 
-      setClasses: (schoolId, classes) =>
-        set(
-          (state) => ({
-            classesBySchool: { ...state.classesBySchool, [schoolId]: classes },
-          }),
-          false,
-          "class/setClasses",
-        ),
-
-      addClass: (cls) =>
-        set(
-          (state) => {
-            const existing = state.classesBySchool[cls.schoolId] ?? [];
-            return {
+        setClasses: (schoolId, classes) =>
+          set(
+            (state) => ({
               classesBySchool: {
                 ...state.classesBySchool,
-                [cls.schoolId]: [cls, ...existing],
+                [schoolId]: classes,
               },
-            };
-          },
-          false,
-          "class/addClass",
-        ),
+            }),
+            false,
+            "class/setClasses",
+          ),
 
-      updateClass: (cls) =>
-        set(
-          (state) => ({
-            classesBySchool: {
-              ...state.classesBySchool,
-              [cls.schoolId]: (state.classesBySchool[cls.schoolId] ?? []).map(
-                (c) => (c.id === cls.id ? cls : c),
-              ),
+        addClass: (cls) =>
+          set(
+            (state) => {
+              const existing = state.classesBySchool[cls.schoolId] ?? [];
+              return {
+                classesBySchool: {
+                  ...state.classesBySchool,
+                  [cls.schoolId]: [cls, ...existing],
+                },
+              };
             },
-          }),
-          false,
-          "class/updateClass",
-        ),
+            false,
+            "class/addClass",
+          ),
 
-      removeClass: (schoolId, classId) =>
-        set(
-          (state) => ({
-            classesBySchool: {
-              ...state.classesBySchool,
-              [schoolId]: (state.classesBySchool[schoolId] ?? []).filter(
-                (c) => c.id !== classId,
-              ),
-            },
-          }),
-          false,
-          "class/removeClass",
-        ),
+        updateClass: (cls) =>
+          set(
+            (state) => ({
+              classesBySchool: {
+                ...state.classesBySchool,
+                [cls.schoolId]: (state.classesBySchool[cls.schoolId] ?? []).map(
+                  (c) => (c.id === cls.id ? cls : c),
+                ),
+              },
+            }),
+            false,
+            "class/updateClass",
+          ),
 
-      setLoading: (isLoading) => set({ isLoading }, false, "class/setLoading"),
+        removeClass: (schoolId, classId) =>
+          set(
+            (state) => ({
+              classesBySchool: {
+                ...state.classesBySchool,
+                [schoolId]: (state.classesBySchool[schoolId] ?? []).filter(
+                  (c) => c.id !== classId,
+                ),
+              },
+            }),
+            false,
+            "class/removeClass",
+          ),
 
-      setError: (error) => set({ error }, false, "class/setError"),
+        setLoading: (isLoading) =>
+          set({ isLoading }, false, "class/setLoading"),
 
-      setSearchQuery: (searchQuery) =>
-        set({ searchQuery }, false, "class/setSearchQuery"),
+        setError: (error) => set({ error }, false, "class/setError"),
 
-      setShiftFilter: (shiftFilter) =>
-        set({ shiftFilter }, false, "class/setShiftFilter"),
-    }),
+        setSearchQuery: (searchQuery) =>
+          set({ searchQuery }, false, "class/setSearchQuery"),
+
+        setShiftFilter: (shiftFilter) =>
+          set({ shiftFilter }, false, "class/setShiftFilter"),
+      }),
+      {
+        name: "edugest-classes-storage",
+        storage: createJSONStorage(() => AsyncStorage),
+        partialize: (state: ClassStore) => ({
+          classesBySchool: state.classesBySchool,
+        }),
+      },
+    ),
     { name: "ClassStore" },
   ),
 );

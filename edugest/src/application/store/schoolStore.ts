@@ -1,5 +1,6 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 import { School } from "../../domain/entities/School";
 
 interface SchoolState {
@@ -23,46 +24,54 @@ type SchoolStore = SchoolState & SchoolActions;
 
 export const useSchoolStore = create<SchoolStore>()(
   devtools(
-    (set) => ({
-      schools: [],
-      isLoading: false,
-      error: null,
-      searchQuery: "",
+    persist(
+      (set) => ({
+        schools: [],
+        isLoading: false,
+        error: null,
+        searchQuery: "",
 
-      setSchools: (schools) => set({ schools }, false, "school/setSchools"),
+        setSchools: (schools) => set({ schools }, false, "school/setSchools"),
 
-      addSchool: (school) =>
-        set(
-          (state) => ({ schools: [school, ...state.schools] }),
-          false,
-          "school/addSchool",
-        ),
+        addSchool: (school) =>
+          set(
+            (state) => ({ schools: [school, ...state.schools] }),
+            false,
+            "school/addSchool",
+          ),
 
-      updateSchool: (school) =>
-        set(
-          (state) => ({
-            schools: state.schools.map((s) =>
-              s.id === school.id ? school : s,
-            ),
-          }),
-          false,
-          "school/updateSchool",
-        ),
+        updateSchool: (school) =>
+          set(
+            (state) => ({
+              schools: state.schools.map((s) =>
+                s.id === school.id ? school : s,
+              ),
+            }),
+            false,
+            "school/updateSchool",
+          ),
 
-      removeSchool: (id) =>
-        set(
-          (state) => ({ schools: state.schools.filter((s) => s.id !== id) }),
-          false,
-          "school/removeSchool",
-        ),
+        removeSchool: (id) =>
+          set(
+            (state) => ({ schools: state.schools.filter((s) => s.id !== id) }),
+            false,
+            "school/removeSchool",
+          ),
 
-      setLoading: (isLoading) => set({ isLoading }, false, "school/setLoading"),
+        setLoading: (isLoading) =>
+          set({ isLoading }, false, "school/setLoading"),
 
-      setError: (error) => set({ error }, false, "school/setError"),
+        setError: (error) => set({ error }, false, "school/setError"),
 
-      setSearchQuery: (searchQuery) =>
-        set({ searchQuery }, false, "school/setSearchQuery"),
-    }),
+        setSearchQuery: (searchQuery) =>
+          set({ searchQuery }, false, "school/setSearchQuery"),
+      }),
+      {
+        name: "edugest-schools-storage",
+        storage: createJSONStorage(() => AsyncStorage),
+        partialize: (state: SchoolStore) => ({ schools: state.schools }),
+      },
+    ),
     { name: "SchoolStore" },
   ),
 );
