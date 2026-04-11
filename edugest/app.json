@@ -21,10 +21,20 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.dzwashington.edugest"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0d703c47-d618-4d4e-9b29-128f348bee6b"
+      }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-router"
+    ]
   }
 }
