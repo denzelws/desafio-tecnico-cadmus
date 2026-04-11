@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { CreateClassDTO, UpdateClassDTO } from "../../domain/entities/Class";
 import { classService } from "../services/classService";
 import { selectFilteredClasses, useClassStore } from "../store/classStore";
@@ -19,7 +20,9 @@ export function useClasses(schoolId: string) {
     setShiftFilter,
   } = useClassStore();
 
-  const filteredClasses = useClassStore(selectFilteredClasses(schoolId));
+  const filteredClasses = useClassStore(
+    useShallow(selectFilteredClasses(schoolId)),
+  );
 
   const fetchClasses = useCallback(async () => {
     if (!schoolId) return;

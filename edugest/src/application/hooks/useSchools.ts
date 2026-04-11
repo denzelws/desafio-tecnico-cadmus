@@ -1,7 +1,8 @@
 import { useCallback, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 import { CreateSchoolDTO, UpdateSchoolDTO } from "../../domain/entities/School";
 import { schoolService } from "../services/schoolService";
-import { selectFilteredSchools, useSchoolStore } from "../store/schoolStore";
+import { useSchoolStore } from "../store/schoolStore";
 
 export function useSchools() {
   const {
@@ -16,9 +17,29 @@ export function useSchools() {
     setLoading,
     setError,
     setSearchQuery,
-  } = useSchoolStore();
+  } = useSchoolStore(
+    useShallow((state) => ({
+      schools: state.schools,
+      isLoading: state.isLoading,
+      error: state.error,
+      searchQuery: state.searchQuery,
+      setSchools: state.setSchools,
+      addSchool: state.addSchool,
+      updateSchool: state.updateSchool,
+      removeSchool: state.removeSchool,
+      setLoading: state.setLoading,
+      setError: state.setError,
+      setSearchQuery: state.setSearchQuery,
+    })),
+  );
 
-  const filteredSchools = useSchoolStore(selectFilteredSchools);
+  const filteredSchools = schools.filter((s) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(q) || s.address.toLowerCase().includes(q)
+    );
+  });
 
   const fetchSchools = useCallback(async () => {
     try {
@@ -34,7 +55,9 @@ export function useSchools() {
   }, [setLoading, setError, setSchools]);
 
   useEffect(() => {
-    fetchSchools();
+    if (schools.length === 0) {
+      fetchSchools();
+    }
   }, [fetchSchools]);
 
   const createSchool = useCallback(
