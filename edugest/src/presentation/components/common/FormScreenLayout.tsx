@@ -1,5 +1,6 @@
 // src/presentation/components/common/FormScreenLayout.tsx
 import { GBox, GHStack, GPressable, GText } from "@/lib/gluestack";
+import { colors } from "@/presentation/theme/token";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -29,7 +30,7 @@ export const FormScreenLayout: React.FC<FormScreenLayoutProps> = ({
           borderBottomColor="$trueGray100"
         >
           <GPressable onPress={() => router.back()} mr="$3">
-            <Ionicons name="arrow-back" size={24} color="#1E293B" />
+            <Ionicons name="arrow-back" size={24} color={colors.on_surface} />
           </GPressable>
           <GText fontSize="$xl" fontWeight="$bold" color="$trueGray800">
             {title}

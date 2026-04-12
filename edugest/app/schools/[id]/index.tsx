@@ -16,6 +16,7 @@ import { FloatingActionButton } from "@/presentation/components/common/FloatingA
 import { LoadingSpinner } from "@/presentation/components/common/LoadingSpinner";
 import { ScreenLayout } from "@/presentation/components/common/ScreenLayout";
 import { SearchBar } from "@/presentation/components/common/SearchBar";
+import { colors } from "@/presentation/theme/token";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
@@ -42,7 +43,7 @@ export default function SchoolDetailScreen() {
     <GBox bg="$white" px="$4" pt="$4" pb="$3">
       <GHStack alignItems="center" mb="$2">
         <GPressable onPress={() => router.back()} mr="$3">
-          <Ionicons name="arrow-back" size={24} color="#1E293B" />
+          <Ionicons name="arrow-back" size={24} color={colors.on_surface} />
         </GPressable>
         <GVStack flex={1}>
           <GText
@@ -58,7 +59,7 @@ export default function SchoolDetailScreen() {
           </GText>
         </GVStack>
         <GPressable onPress={() => router.push(`/schools/${id}/edit`)} ml="$2">
-          <Ionicons name="pencil-outline" size={20} color="#3B82F6" />
+          <Ionicons name="pencil-outline" size={20} color={colors.primary} />
         </GPressable>
       </GHStack>
     </GBox>

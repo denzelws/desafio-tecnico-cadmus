@@ -1,4 +1,5 @@
 import { GBox, GInput, GInputField, GInputSlot } from "@/lib/gluestack";
+import { colors } from "@/presentation/theme/token";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 
@@ -16,7 +17,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   <GBox px="$4" py="$2">
     <GInput variant="rounded" size="md" bg="$trueGray100">
       <GInputSlot pl="$3">
-        <Ionicons name="search" size={18} color="#94A3B8" />
+        <Ionicons name="search" size={18} color={colors.on_surface_muted} />
       </GInputSlot>
       <GInputField
         value={value}

@@ -14,6 +14,7 @@ import {
   GText,
   GVStack,
 } from "@/lib/gluestack";
+import { colors } from "@/presentation/theme/token";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { ConfirmDialog } from "../common/ConfirmDialog";
@@ -64,7 +65,11 @@ export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
           <GMenu
             trigger={(triggerProps: any) => (
               <GPressable {...triggerProps} p="$1">
-                <Ionicons name="ellipsis-vertical" size={20} color="#94A3B8" />
+                <Ionicons
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={colors.on_surface_muted}
+                />
               </GPressable>
             )}
           >
@@ -75,7 +80,11 @@ export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
                 router.push(`/schools/${cls.schoolId}/classes/${cls.id}/edit`)
               }
             >
-              <Ionicons name="pencil-outline" size={16} color="#3B82F6" />
+              <Ionicons
+                name="pencil-outline"
+                size={16}
+                color={colors.primary}
+              />
               <GMenuItemLabel ml="$2">Editar</GMenuItemLabel>
             </GMenuItem>
             <GMenuItem
@@ -83,7 +92,7 @@ export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
               textValue="Excluir"
               onPress={() => setShowDeleteDialog(true)}
             >
-              <Ionicons name="trash-outline" size={16} color="#EF4444" />
+              <Ionicons name="trash-outline" size={16} color={colors.error} />
               <GMenuItemLabel ml="$2" color="$red600">
                 Excluir
               </GMenuItemLabel>
