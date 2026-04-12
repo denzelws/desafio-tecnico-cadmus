@@ -1,0 +1,19 @@
+# Build
+bin/
+obj/
+out/
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# dotnet
+*.user
+*.suo
+.vs/
+
+# Environment
+.env
+appsettings.Development.json
