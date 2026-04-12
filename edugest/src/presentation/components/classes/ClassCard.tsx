@@ -26,6 +26,19 @@ interface ClassCardProps {
 export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleEdit = () => {
+    setMenuOpen(false);
+    setTimeout(() => {
+      router.push(`/schools/${cls.schoolId}/classes/${cls.id}/edit`);
+    }, 150);
+  };
+
+  const handleDelete = () => {
+    setMenuOpen(false);
+    setShowDeleteDialog(true);
+  };
 
   return (
     <>
@@ -62,6 +75,9 @@ export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
             </GVStack>
 
             <GMenu
+              isOpen={menuOpen}
+              onOpen={() => setMenuOpen(true)}
+              onClose={() => setMenuOpen(false)}
               trigger={(triggerProps: any) => (
                 <GPressable {...triggerProps} p="$1">
                   <Ionicons
@@ -72,25 +88,14 @@ export const ClassCard: React.FC<ClassCardProps> = ({ cls, onDelete }) => {
                 </GPressable>
               )}
             >
-              <GMenuItem
-                key="edit"
-                textValue="Editar"
-                onPress={() => {
-                  setTimeout(() => {
-                    router.push(
-                      `/schools/${cls.schoolId}/classes/${cls.id}/edit`,
-                    );
-                  }, 100);
-                }}
-              >
+              <GMenuItem key="edit" textValue="Editar" onPress={handleEdit}>
                 <Ionicons name="pencil-outline" size={16} color="#3B82F6" />
                 <GMenuItemLabel ml="$2">Editar</GMenuItemLabel>
               </GMenuItem>
-
               <GMenuItem
                 key="delete"
                 textValue="Excluir"
-                onPress={() => setShowDeleteDialog(true)}
+                onPress={handleDelete}
               >
                 <Ionicons name="trash-outline" size={16} color="#EF4444" />
                 <GMenuItemLabel ml="$2" color="$red600">

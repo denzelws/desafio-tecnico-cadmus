@@ -30,30 +30,45 @@ interface SchoolCardProps {
 export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
   const router = useRouter();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const classes = useClassStore(useShallow(selectFilteredClasses(school.id)));
   const realClassCount = classes.length;
 
+  const handleEdit = () => {
+    setMenuOpen(false);
+    setTimeout(() => {
+      router.push(`/schools/${school.id}/edit`);
+    }, 150);
+  };
+
+  const handleDelete = () => {
+    setMenuOpen(false);
+    setShowDeleteDialog(true);
+  };
+
   return (
     <>
-      <GPressable
-        onPress={() => router.push(`/schools/${school.id}`)}
+      <GBox
+        bg="$white"
+        borderRadius="$xl"
+        p="$4"
+        mb="$3"
+        mx="$4"
+        shadowColor="$trueGray900"
+        shadowOffset={{ width: 0, height: 2 }}
+        shadowOpacity={0.08}
+        shadowRadius={8}
+        elevation={2}
         testID={`school-card-${school.id}`}
       >
-        <GBox
-          bg="$white"
-          borderRadius="$xl"
-          p="$4"
-          mb="$3"
-          mx="$4"
-          shadowColor="$trueGray900"
-          shadowOffset={{ width: 0, height: 2 }}
-          shadowOpacity={0.08}
-          shadowRadius={8}
-          elevation={2}
-        >
-          <GHStack justifyContent="space-between" alignItems="flex-start">
-            <GVStack flex={1} mr="$2">
+        <GHStack justifyContent="space-between" alignItems="flex-start">
+          <GPressable
+            flex={1}
+            mr="$2"
+            onPress={() => router.push(`/schools/${school.id}`)}
+          >
+            <GVStack>
               <GText
                 fontSize="$md"
                 fontWeight="$semibold"
@@ -62,7 +77,6 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
               >
                 {school.name}
               </GText>
-
               <GHStack alignItems="center" mt="$1" space="xs">
                 <Ionicons
                   name="location-outline"
@@ -78,7 +92,6 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
                   {school.address}
                 </GText>
               </GHStack>
-
               <GHStack mt="$2">
                 <GBadge action="info" variant="solid" borderRadius="$full">
                   <GBadgeText>
@@ -87,49 +100,43 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
                 </GBadge>
               </GHStack>
             </GVStack>
+          </GPressable>
 
-            <GMenu
-              trigger={(triggerProps: any) => (
-                <GPressable
-                  {...triggerProps}
-                  p="$1"
-                  testID={`school-menu-${school.id}`}
-                >
-                  <Ionicons
-                    name="ellipsis-vertical"
-                    size={20}
-                    color={colors.on_surface_muted}
-                  />
-                </GPressable>
-              )}
-            >
-              <GMenuItem
-                key="edit"
-                textValue="Editar"
-                onPress={() => router.push(`/schools/${school.id}/edit`)}
+          <GMenu
+            isOpen={menuOpen}
+            onOpen={() => setMenuOpen(true)}
+            onClose={() => setMenuOpen(false)}
+            trigger={(triggerProps: any) => (
+              <GPressable
+                {...triggerProps}
+                p="$1"
+                testID={`school-menu-${school.id}`}
               >
                 <Ionicons
-                  name="pencil-outline"
-                  size={16}
-                  color={colors.primary}
+                  name="ellipsis-vertical"
+                  size={20}
+                  color={colors.on_surface_muted}
                 />
-                <GMenuItemLabel ml="$2">Editar</GMenuItemLabel>
-              </GMenuItem>
-
-              <GMenuItem
-                key="delete"
-                textValue="Excluir"
-                onPress={() => setShowDeleteDialog(true)}
-              >
-                <Ionicons name="trash-outline" size={16} color={colors.error} />
-                <GMenuItemLabel ml="$2" color="$red600">
-                  Excluir
-                </GMenuItemLabel>
-              </GMenuItem>
-            </GMenu>
-          </GHStack>
-        </GBox>
-      </GPressable>
+              </GPressable>
+            )}
+          >
+            <GMenuItem key="edit" textValue="Editar" onPress={handleEdit}>
+              <Ionicons
+                name="pencil-outline"
+                size={16}
+                color={colors.primary}
+              />
+              <GMenuItemLabel ml="$2">Editar</GMenuItemLabel>
+            </GMenuItem>
+            <GMenuItem key="delete" textValue="Excluir" onPress={handleDelete}>
+              <Ionicons name="trash-outline" size={16} color={colors.error} />
+              <GMenuItemLabel ml="$2" color="$red600">
+                Excluir
+              </GMenuItemLabel>
+            </GMenuItem>
+          </GMenu>
+        </GHStack>
+      </GBox>
 
       <ConfirmDialog
         isOpen={showDeleteDialog}
