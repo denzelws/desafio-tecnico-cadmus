@@ -15,4 +15,7 @@ module.exports = {
     "!src/**/*.d.ts",
     "!src/infrastructure/mock/**",
   ],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  testMatch: ["**/__tests__/**/*.test.ts", "**/__tests__/**/*.test.tsx"],
 };
