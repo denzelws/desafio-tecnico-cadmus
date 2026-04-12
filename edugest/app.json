@@ -32,9 +32,12 @@
         "projectId": "0d703c47-d618-4d4e-9b29-128f348bee6b"
       }
     },
-    "plugins": [
-      "expo-font",
-      "expo-router"
-    ]
+    "plugins": ["expo-font", "expo-router"],
+    "expo": {
+      "name": "edugest",
+      "extra": {
+        "useMSW": false
+      }
+    }
   }
 }

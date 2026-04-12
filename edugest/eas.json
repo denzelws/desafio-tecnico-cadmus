@@ -5,10 +5,16 @@
   },
   "build": {
     "development": {
+      "env": {
+        "APP_ENV": "development"
+      },
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
+      "env": {
+        "APP_ENV": "preview"
+      },
       "distribution": "internal"
     },
     "production": {
