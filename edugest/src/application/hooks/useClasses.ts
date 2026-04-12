@@ -30,7 +30,6 @@ export function useClasses(schoolId?: string) {
 
   const fetchClasses = useCallback(async () => {
     if (!schoolId) return;
-
     try {
       setLoading(true);
       setError(null);
@@ -49,6 +48,7 @@ export function useClasses(schoolId?: string) {
 
   const createClass = useCallback(
     async (dto: CreateClassDTO) => {
+      if (!schoolId) throw new Error("schoolId é obrigatório");
       const cls = await classService.create(schoolId, dto);
       addClass(cls);
       return cls;
@@ -58,6 +58,7 @@ export function useClasses(schoolId?: string) {
 
   const editClass = useCallback(
     async (classId: string, dto: UpdateClassDTO) => {
+      if (!schoolId) throw new Error("schoolId é obrigatório");
       const cls = await classService.update(schoolId, classId, dto);
       updateClass(cls);
       return cls;
@@ -67,6 +68,7 @@ export function useClasses(schoolId?: string) {
 
   const deleteClass = useCallback(
     async (classId: string) => {
+      if (!schoolId) throw new Error("schoolId é obrigatório");
       await classService.remove(schoolId, classId);
       removeClass(schoolId, classId);
     },

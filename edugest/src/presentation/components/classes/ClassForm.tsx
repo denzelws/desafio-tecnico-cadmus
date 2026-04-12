@@ -21,9 +21,15 @@ import {
 import { colors, radius } from "@/presentation/theme/token";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, Resolver, useForm } from "react-hook-form";
 import { FormContainer } from "../common/FormContainer";
 import { FormField } from "../common/FormField";
+
+type ClassFormData = {
+  name: string;
+  shift: "morning" | "afternoon" | "evening" | "full";
+  academicYear: number;
+};
 
 interface ClassFormProps {
   defaultValues?: Partial<CreateClassInput>;
@@ -42,8 +48,8 @@ export const ClassForm: React.FC<ClassFormProps> = ({
     control,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm<CreateClassInput>({
-    resolver: zodResolver(createClassSchema),
+  } = useForm<ClassFormData>({
+    resolver: zodResolver(createClassSchema) as Resolver<ClassFormData>,
     mode: "onChange",
     defaultValues: {
       name: "",
