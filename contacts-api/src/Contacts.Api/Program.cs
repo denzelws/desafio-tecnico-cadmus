@@ -1,3 +1,4 @@
+using Contacts.Application.DTOs;
 using Contacts.Api.Middleware;
 using Contacts.Application.Interfaces;
 using Contacts.Application.Services;
@@ -5,10 +6,15 @@ using Contacts.Domain.Interfaces;
 using Contacts.Infrastructure.Data;
 using Contacts.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Contacts.Application.Validators;
+using FluentValidation.AspNetCore;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddScoped<IValidator<ContactRequestDto>, ContactRequestValidator>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
