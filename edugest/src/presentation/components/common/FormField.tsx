@@ -54,7 +54,8 @@ export const FormField: React.FC<FormFieldProps> = ({
               value={isNumeric ? String(value ?? "") : value}
               onChangeText={(text: string) => {
                 if (isNumeric) {
-                  onChange(Number(text.replace(/[^0-9]/g, "")));
+                  const numeric = text.replace(/[^0-9]/g, "");
+                  onChange(numeric ? Number(numeric) : 0);
                 } else {
                   onChange(text);
                 }
