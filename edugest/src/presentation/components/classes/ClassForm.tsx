@@ -53,6 +53,9 @@ export const ClassForm: React.FC<ClassFormProps> = ({
     },
   });
 
+  const getShiftLabel = (val: string) =>
+    shiftOptions.find((opt) => opt.value === val)?.label || "";
+
   const shiftOptions = [
     { label: "Matutino", value: "morning" },
     { label: "Vespertino", value: "afternoon" },
@@ -98,7 +101,7 @@ export const ClassForm: React.FC<ClassFormProps> = ({
               >
                 <GSelectInput
                   placeholder="Selecione o turno"
-                  value={value}
+                  value={getShiftLabel(value)}
                   color={colors.on_surface}
                 />
               </GSelectTrigger>
