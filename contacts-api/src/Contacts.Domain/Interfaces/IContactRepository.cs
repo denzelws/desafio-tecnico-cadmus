@@ -5,6 +5,7 @@ namespace Contacts.Domain.Interfaces;
 public interface IContactRepository
 {
     Task<IEnumerable<Contact>> GetAllActiveAsync();
+    Task<int> CountActiveAsync();  
     Task<Contact?> GetActiveByIdAsync(Guid id);
     Task<Contact?> GetByIdAsync(Guid id);
     Task AddAsync(Contact contact);

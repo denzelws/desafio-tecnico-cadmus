@@ -17,10 +17,10 @@ public class ContactsController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ContactResponseDto>), 200)]
-    public async Task<IActionResult> GetAll()
+    [ProducesResponseType(typeof(PagedResultDto<ContactResponseDto>), 200)]
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var contacts = await _service.GetAllActiveAsync();
+        var contacts = await _service.GetAllActiveAsync(page, pageSize);
         return Ok(contacts);
     }
 

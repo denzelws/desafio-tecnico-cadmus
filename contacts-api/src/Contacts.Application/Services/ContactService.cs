@@ -14,10 +14,17 @@ public class ContactService : IContactService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<ContactResponseDto>> GetAllActiveAsync()
+    public async Task<PagedResultDto<ContactResponseDto>> GetAllActiveAsync(int page = 1, int pageSize = 10)
     {
         var contacts = await _repository.GetAllActiveAsync();
-        return contacts.Select(ContactResponseDto.FromEntity);
+        var total = await _repository.CountActiveAsync();
+
+        var items = contacts
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(ContactResponseDto.FromEntity);
+
+        return new PagedResultDto<ContactResponseDto>(items, total, page, pageSize);
     }
 
     public async Task<ContactResponseDto> GetByIdAsync(Guid id)

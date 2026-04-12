@@ -17,6 +17,9 @@ public class ContactRepository : IContactRepository
     public async Task<IEnumerable<Contact>> GetAllActiveAsync() =>
         await _context.Contacts.Where(c => c.IsActive).ToListAsync();
 
+    public async Task<int> CountActiveAsync() =>
+        await _context.Contacts.Where(c => c.IsActive).CountAsync();
+
     public async Task<Contact?> GetActiveByIdAsync(Guid id) =>
         await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
 

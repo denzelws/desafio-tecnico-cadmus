@@ -28,10 +28,11 @@ public class ContactServiceTests
         };
 
         _repositoryMock.Setup(r => r.GetAllActiveAsync()).ReturnsAsync(contacts);
+        _repositoryMock.Setup(r => r.CountActiveAsync()).ReturnsAsync(2);
 
         var result = await _service.GetAllActiveAsync();
 
-        Assert.Equal(2, result.Count());
+        Assert.Equal(2, result.TotalCount);
         _repositoryMock.Verify(r => r.GetAllActiveAsync(), Times.Once);
     }
 
