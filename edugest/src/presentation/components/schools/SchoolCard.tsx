@@ -1,3 +1,7 @@
+import {
+  selectFilteredClasses,
+  useClassStore,
+} from "@/application/store/classStore";
 import type { School } from "@/domain/entities/School";
 import {
   GBadge,
@@ -11,16 +15,12 @@ import {
   GText,
   GVStack,
 } from "@/lib/gluestack";
+import { colors } from "@/presentation/theme/token";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ConfirmDialog } from "../common/ConfirmDialog";
-
-import {
-  selectFilteredClasses,
-  useClassStore,
-} from "@/application/store/classStore";
 import { useShallow } from "zustand/react/shallow";
+import { ConfirmDialog } from "../common/ConfirmDialog";
 
 interface SchoolCardProps {
   school: School;
@@ -62,8 +62,13 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
               >
                 {school.name}
               </GText>
+
               <GHStack alignItems="center" mt="$1" space="xs">
-                <Ionicons name="location-outline" size={14} color="#64748B" />
+                <Ionicons
+                  name="location-outline"
+                  size={14}
+                  color={colors.on_surface_muted}
+                />
                 <GText
                   fontSize="$sm"
                   color="$trueGray500"
@@ -73,6 +78,7 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
                   {school.address}
                 </GText>
               </GHStack>
+
               <GHStack mt="$2">
                 <GBadge action="info" variant="solid" borderRadius="$full">
                   <GBadgeText>
@@ -92,7 +98,7 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
                   <Ionicons
                     name="ellipsis-vertical"
                     size={20}
-                    color="#94A3B8"
+                    color={colors.on_surface_muted}
                   />
                 </GPressable>
               )}
@@ -102,15 +108,20 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
                 textValue="Editar"
                 onPress={() => router.push(`/schools/${school.id}/edit`)}
               >
-                <Ionicons name="pencil-outline" size={16} color="#3B82F6" />
+                <Ionicons
+                  name="pencil-outline"
+                  size={16}
+                  color={colors.primary}
+                />
                 <GMenuItemLabel ml="$2">Editar</GMenuItemLabel>
               </GMenuItem>
+
               <GMenuItem
                 key="delete"
                 textValue="Excluir"
                 onPress={() => setShowDeleteDialog(true)}
               >
-                <Ionicons name="trash-outline" size={16} color="#EF4444" />
+                <Ionicons name="trash-outline" size={16} color={colors.error} />
                 <GMenuItemLabel ml="$2" color="$red600">
                   Excluir
                 </GMenuItemLabel>

@@ -1,21 +1,11 @@
 import { useClasses } from "@/application/hooks/useClasses";
 import type { CreateClassInput } from "@/domain/schemas/classSchema";
-import {
-  GBox,
-  GHStack,
-  GPressable,
-  GText,
-  GToast,
-  GToastTitle,
-} from "@/lib/gluestack";
+import { GToast, GToastTitle } from "@/lib/gluestack";
 import { ClassForm } from "@/presentation/components/classes/ClassForm";
-
-import { Ionicons } from "@expo/vector-icons";
+import { FormScreenLayout } from "@/presentation/components/common/FormScreenLayout";
 import { useToast } from "@gluestack-ui/themed";
-
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
 
 export default function NewClassScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -54,31 +44,12 @@ export default function NewClassScreen() {
   };
 
   return (
-    <GBox flex={1} bg="$white">
-      <GHStack
-        alignItems="center"
-        px="$4"
-        py="$4"
-        borderBottomWidth={1}
-        borderBottomColor="$trueGray100"
-      >
-        <GPressable onPress={() => router.back()} mr="$3">
-          <Ionicons name="arrow-back" size={24} color="#1E293B" />
-        </GPressable>
-        <GText fontSize="$xl" fontWeight="$bold" color="$trueGray800">
-          Nova Turma
-        </GText>
-      </GHStack>
-
-      <ScrollView keyboardShouldPersistTaps="handled">
-        <GBox pt="$6">
-          <ClassForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            submitLabel="Cadastrar Turma"
-          />
-        </GBox>
-      </ScrollView>
-    </GBox>
+    <FormScreenLayout title="Nova Turma">
+      <ClassForm
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        submitLabel="Cadastrar Turma"
+      />
+    </FormScreenLayout>
   );
 }

@@ -2,20 +2,11 @@ import {
   createSchoolSchema,
   type CreateSchoolInput,
 } from "@/domain/schemas/schoolSchema";
-import { GBox, GButton, GButtonSpinner, GVStack } from "@/lib/gluestack";
-import {
-  ButtonText,
-  FormControl,
-  FormControlError,
-  FormControlErrorText,
-  FormControlLabel,
-  FormControlLabelText,
-  Input,
-  InputField,
-} from "@gluestack-ui/themed";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { FormContainer } from "../common/FormContainer";
+import { FormField } from "../common/FormField";
 
 interface SchoolFormProps {
   defaultValues?: Partial<CreateSchoolInput>;
@@ -37,80 +28,33 @@ export const SchoolForm: React.FC<SchoolFormProps> = ({
   } = useForm<CreateSchoolInput>({
     resolver: zodResolver(createSchoolSchema),
     mode: "onChange",
-    defaultValues: {
-      name: "",
-      address: "",
-      ...defaultValues,
-    },
+    defaultValues: { name: "", address: "", ...defaultValues },
   });
 
   return (
-    <GBox px="$4">
-      <GVStack space="lg">
-        <FormControl isInvalid={!!errors.name}>
-          <FormControlLabel>
-            <FormControlLabelText>Nome da escola *</FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input>
-                <InputField
-                  placeholder="Ex: Escola Municipal João Pessoa"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  testID="school-name-input"
-                />
-              </Input>
-            )}
-          />
-          {errors.name && (
-            <FormControlError>
-              <FormControlErrorText>{errors.name.message}</FormControlErrorText>
-            </FormControlError>
-          )}
-        </FormControl>
+    <FormContainer
+      onSubmit={handleSubmit(onSubmit)}
+      isLoading={isLoading}
+      isValid={isValid}
+      submitLabel={submitLabel}
+    >
+      <FormField
+        control={control}
+        name="name"
+        label="Nome da escola *"
+        placeholder="Ex: Escola Municipal João Pessoa"
+        error={errors.name}
+        testID="school-name-input"
+      />
 
-        <FormControl isInvalid={!!errors.address}>
-          <FormControlLabel>
-            <FormControlLabelText>Endereço *</FormControlLabelText>
-          </FormControlLabel>
-          <Controller
-            control={control}
-            name="address"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input>
-                <InputField
-                  placeholder="Ex: Rua das Flores, 100 - Centro"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  testID="school-address-input"
-                />
-              </Input>
-            )}
-          />
-          {errors.address && (
-            <FormControlError>
-              <FormControlErrorText>
-                {errors.address.message}
-              </FormControlErrorText>
-            </FormControlError>
-          )}
-        </FormControl>
-
-        <GButton
-          onPress={handleSubmit(onSubmit)}
-          isDisabled={isLoading || !isValid}
-          mt="$4"
-          testID="school-submit-button"
-        >
-          {isLoading ? <GButtonSpinner mr="$2" /> : null}
-          <ButtonText>{isLoading ? "Salvando..." : submitLabel}</ButtonText>
-        </GButton>
-      </GVStack>
-    </GBox>
+      <FormField
+        control={control}
+        name="address"
+        label="Endereço *"
+        placeholder="Ex: Rua das Flores, 100"
+        error={errors.address}
+        testID="school-address-input"
+      />
+    </FormContainer>
   );
 };

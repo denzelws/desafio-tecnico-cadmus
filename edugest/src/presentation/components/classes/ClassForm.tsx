@@ -1,21 +1,13 @@
 import {
-  CreateClassOutput,
+  CreateClassInput,
   createClassSchema,
-  type CreateClassInput,
 } from "@/domain/schemas/classSchema";
-
 import {
-  GBox,
-  GButton,
-  GButtonSpinner,
-  GButtonText,
   GFormControl,
   GFormControlError,
   GFormControlErrorText,
   GFormControlLabel,
   GFormControlLabelText,
-  GInput,
-  GInputField,
   GSelect,
   GSelectBackdrop,
   GSelectContent,
@@ -25,12 +17,13 @@ import {
   GSelectItem,
   GSelectPortal,
   GSelectTrigger,
-  GVStack,
 } from "@/lib/gluestack";
-
+import { colors, radius } from "@/presentation/theme/token";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Controller, Resolver, useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { FormContainer } from "../common/FormContainer";
+import { FormField } from "../common/FormField";
 
 interface ClassFormProps {
   defaultValues?: Partial<CreateClassInput>;
@@ -39,20 +32,19 @@ interface ClassFormProps {
   submitLabel?: string;
 }
 
-type ClassFormData = Omit<CreateClassOutput, "schoolId">;
-
 export const ClassForm: React.FC<ClassFormProps> = ({
   defaultValues,
   onSubmit,
   isLoading = false,
-  submitLabel = "Salvar",
+  submitLabel = "Salvar Turma",
 }) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
-  } = useForm<ClassFormData>({
-    resolver: zodResolver(createClassSchema) as Resolver<ClassFormData>,
+    formState: { errors, isValid },
+  } = useForm<CreateClassInput>({
+    resolver: zodResolver(createClassSchema),
+    mode: "onChange",
     defaultValues: {
       name: "",
       shift: "morning",
@@ -61,117 +53,94 @@ export const ClassForm: React.FC<ClassFormProps> = ({
     },
   });
 
+  const shiftOptions = [
+    { label: "Matutino", value: "morning" },
+    { label: "Vespertino", value: "afternoon" },
+    { label: "Noturno", value: "evening" },
+    { label: "Integral", value: "full" },
+  ];
+
   return (
-    <GBox px="$4">
-      <GVStack space="lg">
-        <GFormControl isInvalid={!!errors.name}>
-          <GFormControlLabel>
-            <GFormControlLabelText>Nome da turma *</GFormControlLabelText>
-          </GFormControlLabel>
-          <Controller
-            control={control}
-            name="name"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <GInput>
-                <GInputField
-                  placeholder="Ex: 1º Ano A"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  testID="class-name-GInput"
-                />
-              </GInput>
-            )}
-          />
-          {errors.name && (
-            <GFormControlError>
-              <GFormControlErrorText>
-                {errors.name.message}
-              </GFormControlErrorText>
-            </GFormControlError>
-          )}
-        </GFormControl>
+    <FormContainer
+      onSubmit={handleSubmit(onSubmit)}
+      isLoading={isLoading}
+      isValid={isValid}
+      submitLabel={submitLabel}
+    >
+      <FormField
+        control={control}
+        name="name"
+        label="Nome da turma *"
+        placeholder="Ex: 1º Ano A"
+        error={errors.name}
+        testID="class-name-input"
+      />
 
-        <GFormControl isInvalid={!!errors.shift}>
-          <GFormControlLabel>
-            <GFormControlLabelText>Turno *</GFormControlLabelText>
-          </GFormControlLabel>
-          <Controller
-            control={control}
-            name="shift"
-            render={({ field: { onChange, value } }) => (
-              <GSelect
-                selectedValue={value}
-                onValueChange={onChange}
-                testID="class-shift-select"
+      <GFormControl isInvalid={!!errors.shift}>
+        <GFormControlLabel mb="$2">
+          <GFormControlLabelText color={colors.on_surface} fontWeight="$bold">
+            Turno *
+          </GFormControlLabelText>
+        </GFormControlLabel>
+
+        <Controller
+          control={control}
+          name="shift"
+          render={({ field: { onChange, value } }) => (
+            <GSelect selectedValue={value} onValueChange={onChange}>
+              <GSelectTrigger
+                variant="outline"
+                size="md"
+                bg={colors.surface_bright}
+                borderRadius={radius.md}
+                borderWidth={0}
+                h={50}
               >
-                <GSelectTrigger variant="outline" size="md">
-                  <GSelectInput placeholder="Selecione o turno" />
-                </GSelectTrigger>
-                <GSelectPortal>
-                  <GSelectBackdrop />
-                  <GSelectContent>
-                    <GSelectDragIndicatorWrapper>
-                      <GSelectDragIndicator />
-                    </GSelectDragIndicatorWrapper>
-                    <GSelectItem label="Matutino" value="morning" />
-                    <GSelectItem label="Vespertino" value="afternoon" />
-                    <GSelectItem label="Noturno" value="evening" />
-                    <GSelectItem label="Integral" value="full" />
-                  </GSelectContent>
-                </GSelectPortal>
-              </GSelect>
-            )}
-          />
-          {errors.shift && (
-            <GFormControlError>
-              <GFormControlErrorText>
-                {errors.shift.message}
-              </GFormControlErrorText>
-            </GFormControlError>
-          )}
-        </GFormControl>
-
-        <GFormControl isInvalid={!!errors.academicYear}>
-          <GFormControlLabel>
-            <GFormControlLabelText>Ano letivo *</GFormControlLabelText>
-          </GFormControlLabel>
-          <Controller
-            control={control}
-            name="academicYear"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <GInput>
-                <GInputField
-                  placeholder={String(new Date().getFullYear())}
-                  value={String(value)}
-                  onChangeText={(v: string) => onChange(Number(v))}
-                  onBlur={onBlur}
-                  keyboardType="numeric"
-                  maxLength={4}
-                  testID="class-year-GInput"
+                <GSelectInput
+                  placeholder="Selecione o turno"
+                  value={value}
+                  color={colors.on_surface}
                 />
-              </GInput>
-            )}
-          />
-          {errors.academicYear && (
-            <GFormControlError>
-              <GFormControlErrorText>
-                {errors.academicYear.message}
-              </GFormControlErrorText>
-            </GFormControlError>
-          )}
-        </GFormControl>
+              </GSelectTrigger>
 
-        <GButton
-          onPress={handleSubmit(onSubmit)}
-          isDisabled={isLoading}
-          mt="$4"
-          testID="class-submit-button"
-        >
-          {isLoading ? <GButtonSpinner mr="$2" /> : null}
-          <GButtonText>{isLoading ? "Salvando..." : submitLabel}</GButtonText>
-        </GButton>
-      </GVStack>
-    </GBox>
+              <GSelectPortal>
+                <GSelectBackdrop />
+                <GSelectContent>
+                  <GSelectDragIndicatorWrapper>
+                    <GSelectDragIndicator />
+                  </GSelectDragIndicatorWrapper>
+
+                  {shiftOptions.map((option) => (
+                    <GSelectItem
+                      key={option.value}
+                      label={option.label}
+                      value={option.value}
+                    />
+                  ))}
+                </GSelectContent>
+              </GSelectPortal>
+            </GSelect>
+          )}
+        />
+
+        {errors.shift && (
+          <GFormControlError mt="$1">
+            <GFormControlErrorText color={colors.error}>
+              {errors.shift.message}
+            </GFormControlErrorText>
+          </GFormControlError>
+        )}
+      </GFormControl>
+
+      <FormField
+        control={control}
+        name="academicYear"
+        label="Ano letivo *"
+        placeholder={String(new Date().getFullYear())}
+        error={errors.academicYear}
+        isNumeric={true}
+        testID="class-year-input"
+      />
+    </FormContainer>
   );
 };

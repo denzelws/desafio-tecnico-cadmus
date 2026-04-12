@@ -1,19 +1,11 @@
 import { useSchools } from "@/application/hooks/useSchools";
 import type { CreateSchoolInput } from "@/domain/schemas/schoolSchema";
-import {
-  GBox,
-  GHStack,
-  GPressable,
-  GText,
-  GToast,
-  GToastTitle,
-} from "@/lib/gluestack";
+import { GToast, GToastTitle } from "@/lib/gluestack";
+import { FormScreenLayout } from "@/presentation/components/common/FormScreenLayout";
 import { SchoolForm } from "@/presentation/components/schools/SchoolForm";
-import { Ionicons } from "@expo/vector-icons";
 import { useToast } from "@gluestack-ui/themed";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView } from "react-native";
 
 export default function NewSchoolScreen() {
   const router = useRouter();
@@ -51,32 +43,12 @@ export default function NewSchoolScreen() {
   };
 
   return (
-    <GBox flex={1} bg="$white">
-      {/* Header */}
-      <GHStack
-        alignItems="center"
-        px="$4"
-        py="$4"
-        borderBottomWidth={1}
-        borderBottomColor="$trueGray100"
-      >
-        <GPressable onPress={() => router.back()} mr="$3">
-          <Ionicons name="arrow-back" size={24} color="#1E293B" />
-        </GPressable>
-        <GText fontSize="$xl" fontWeight="$bold" color="$trueGray800">
-          Nova Escola
-        </GText>
-      </GHStack>
-
-      <ScrollView keyboardShouldPersistTaps="handled">
-        <GBox pt="$6">
-          <SchoolForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            submitLabel="Cadastrar Escola"
-          />
-        </GBox>
-      </ScrollView>
-    </GBox>
+    <FormScreenLayout title="Nova Escola">
+      <SchoolForm
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        submitLabel="Cadastrar Escola"
+      />
+    </FormScreenLayout>
   );
 }

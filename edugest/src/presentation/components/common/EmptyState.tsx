@@ -1,4 +1,5 @@
 import { GBox, GText, GVStack } from "@/lib/gluestack";
+import { colors } from "@/presentation/theme/token";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 
@@ -15,14 +16,19 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 }) => (
   <GBox flex={1} alignItems="center" justifyContent="center" py="$16">
     <GVStack alignItems="center" gap="$4">
-      <Ionicons name={icon} size={64} color="#CBD5E1" />
+      <Ionicons name={icon} size={80} color={colors.primary} />
 
-      <GText size="lg" fontWeight="$semibold" color="$trueGray500">
+      <GText size="lg" fontWeight="$semibold" color={colors.on_surface_muted}>
         {title}
       </GText>
 
       {description ? (
-        <GText size="sm" color="$trueGray400" textAlign="center" px="$8">
+        <GText
+          size="sm"
+          color={colors.on_surface_muted}
+          textAlign="center"
+          px="$8"
+        >
           {description}
         </GText>
       ) : null}

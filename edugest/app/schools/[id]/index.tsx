@@ -5,8 +5,6 @@ import {
   GBadge,
   GBadgeText,
   GBox,
-  GFab,
-  GFabIcon,
   GHStack,
   GPressable,
   GText,
@@ -14,10 +12,11 @@ import {
 } from "@/lib/gluestack";
 import { ClassCard } from "@/presentation/components/classes/ClassCard";
 import { EmptyState } from "@/presentation/components/common/EmptyState";
+import { FloatingActionButton } from "@/presentation/components/common/FloatingActionButton";
 import { LoadingSpinner } from "@/presentation/components/common/LoadingSpinner";
+import { ScreenLayout } from "@/presentation/components/common/ScreenLayout";
 import { SearchBar } from "@/presentation/components/common/SearchBar";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "@gluestack-ui/themed";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { FlatList, RefreshControl } from "react-native";
@@ -39,87 +38,97 @@ export default function SchoolDetailScreen() {
     deleteClass,
   } = useClasses(id);
 
-  return (
-    <SafeAreaView flex={1} bg="$trueGray50">
-      <GBox
-        bg="$white"
-        px="$4"
-        pt="$4"
-        pb="$3"
-        borderBottomWidth={1}
-        borderBottomColor="$trueGray100"
-      >
-        <GHStack alignItems="center" mb="$2">
-          <GPressable onPress={() => router.back()} mr="$3">
-            <Ionicons name="arrow-back" size={24} color="#1E293B" />
-          </GPressable>
-          <GVStack flex={1}>
-            <GText
-              fontSize="$lg"
-              fontWeight="$bold"
-              color="$trueGray800"
-              numberOfLines={1}
-            >
-              {school?.name ?? "Escola"}
-            </GText>
-            <GText fontSize="$xs" color="$trueGray500" numberOfLines={1}>
-              {school?.address}
-            </GText>
-          </GVStack>
-          <GPressable
-            onPress={() => router.push(`/schools/${id}/edit`)}
-            ml="$2"
+  const Header = () => (
+    <GBox bg="$white" px="$4" pt="$4" pb="$3">
+      <GHStack alignItems="center" mb="$2">
+        <GPressable onPress={() => router.back()} mr="$3">
+          <Ionicons name="arrow-back" size={24} color="#1E293B" />
+        </GPressable>
+        <GVStack flex={1}>
+          <GText
+            fontSize="$lg"
+            fontWeight="$bold"
+            color="$trueGray800"
+            numberOfLines={1}
           >
-            <Ionicons name="pencil-outline" size={20} color="#3B82F6" />
-          </GPressable>
-        </GHStack>
-      </GBox>
+            {school?.name ?? "Escola"}
+          </GText>
+          <GText fontSize="$xs" color="$trueGray500" numberOfLines={1}>
+            {school?.address}
+          </GText>
+        </GVStack>
+        <GPressable onPress={() => router.push(`/schools/${id}/edit`)} ml="$2">
+          <Ionicons name="pencil-outline" size={20} color="#3B82F6" />
+        </GPressable>
+      </GHStack>
+    </GBox>
+  );
 
-      <GBox bg="$white" pb="$2">
-        <SearchBar
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Buscar turma..."
-        />
+  const SearchFilters = () => (
+    <GBox bg="$white" pb="$2">
+      <SearchBar
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Buscar turma..."
+      />
 
-        <GHStack px="$4" space="xs" flexWrap="wrap">
-          <GPressable onPress={() => setShiftFilter("")}>
+      <GHStack px="$4" space="xs" flexWrap="wrap">
+        <GPressable onPress={() => setShiftFilter("")}>
+          <GBadge
+            action={!shiftFilter ? "info" : "muted"}
+            variant={!shiftFilter ? "solid" : "outline"}
+            borderRadius="$full"
+            mr="$1"
+            mb="$1"
+          >
+            <GBadgeText>Todos</GBadgeText>
+          </GBadge>
+        </GPressable>
+
+        {SHIFTS.map((s) => (
+          <GPressable
+            key={s}
+            onPress={() => setShiftFilter(s === shiftFilter ? "" : s)}
+          >
             <GBadge
-              action={!shiftFilter ? "info" : "muted"}
-              variant={!shiftFilter ? "solid" : "outline"}
+              action={shiftFilter === s ? "info" : "muted"}
+              variant={shiftFilter === s ? "solid" : "outline"}
               borderRadius="$full"
               mr="$1"
               mb="$1"
             >
-              <GBadgeText>Todos</GBadgeText>
+              <GBadgeText>{SHIFT_LABELS[s as Shift]}</GBadgeText>
             </GBadge>
           </GPressable>
+        ))}
+      </GHStack>
+    </GBox>
+  );
 
-          {SHIFTS.map((s) => (
-            <GPressable
-              key={s}
-              onPress={() => setShiftFilter(s === shiftFilter ? "" : s)}
-            >
-              <GBadge
-                action={shiftFilter === s ? "info" : "muted"}
-                variant={shiftFilter === s ? "solid" : "outline"}
-                borderRadius="$full"
-                mr="$1"
-                mb="$1"
-              >
-                <GBadgeText>{SHIFT_LABELS[s as Shift]}</GBadgeText>
-              </GBadge>
-            </GPressable>
-          ))}
-        </GHStack>
-      </GBox>
+  const Counter = () => (
+    <GBox px="$4" py="$2">
+      <GText fontSize="$sm" fontWeight="$semibold" color="$trueGray600">
+        TURMAS ({classes.length})
+      </GText>
+    </GBox>
+  );
 
-      <GBox px="$4" py="$2">
-        <GText fontSize="$sm" fontWeight="$semibold" color="$trueGray600">
-          TURMAS ({classes.length})
-        </GText>
-      </GBox>
-
+  return (
+    <ScreenLayout
+      header={
+        <>
+          <Header />
+          <SearchFilters />
+          <Counter />
+        </>
+      }
+      fab={
+        <FloatingActionButton
+          onPress={() => router.push(`/schools/${id}/classes/new`)}
+          icon="people-outline"
+        />
+      }
+    >
       {isLoading && !classes.length ? (
         <LoadingSpinner />
       ) : (
@@ -143,16 +152,6 @@ export default function SchoolDetailScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-
-      <GFab
-        size="md"
-        placement="bottom right"
-        onPress={() => router.push(`/schools/${id}/classes/new`)}
-        bg="$blue600"
-        testID="add-class-fab"
-      >
-        <GFabIcon as={() => <Ionicons name="add" size={24} color="white" />} />
-      </GFab>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }
