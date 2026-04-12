@@ -8,6 +8,7 @@ interface SchoolState {
   isLoading: boolean;
   error: string | null;
   searchQuery: string;
+  _hasHydrated: boolean;
 }
 
 interface SchoolActions {
@@ -18,6 +19,7 @@ interface SchoolActions {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setSearchQuery: (query: string) => void;
+  setHasHydrated: (state: boolean) => void;
 }
 
 type SchoolStore = SchoolState & SchoolActions;
@@ -30,6 +32,7 @@ export const useSchoolStore = create<SchoolStore>()(
         isLoading: false,
         error: null,
         searchQuery: "",
+        _hasHydrated: false,
 
         setSchools: (schools) => set({ schools }, false, "school/setSchools"),
 
@@ -65,11 +68,18 @@ export const useSchoolStore = create<SchoolStore>()(
 
         setSearchQuery: (searchQuery) =>
           set({ searchQuery }, false, "school/setSearchQuery"),
+
+        setHasHydrated: (state) => set({ _hasHydrated: state }),
       }),
       {
         name: "edugest-schools-storage",
         storage: createJSONStorage(() => AsyncStorage),
-        partialize: (state: SchoolStore) => ({ schools: state.schools }),
+        partialize: (state: SchoolStore) => ({
+          schools: state.schools,
+        }),
+        onRehydrateStorage: () => (state) => {
+          state?.setHasHydrated(true);
+        },
       },
     ),
     { name: "SchoolStore" },
