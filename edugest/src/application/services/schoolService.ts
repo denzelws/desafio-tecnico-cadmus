@@ -31,7 +31,7 @@ const memoryService = {
   async create(dto: CreateSchoolDTO): Promise<School> {
     await delay();
     const exists = schools.find(
-      (s) => s.name.toLowerCase() === dto.name.toLowerCase(),
+      (s) => s.name.toLowerCase().trim() === dto.name.toLowerCase().trim(),
     );
     if (exists) throw new Error("Já existe uma escola com esse nome");
     const school: School = {
