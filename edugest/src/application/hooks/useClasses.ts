@@ -4,7 +4,9 @@ import { CreateClassDTO, UpdateClassDTO } from "../../domain/entities/Class";
 import { classService } from "../services/classService";
 import { selectFilteredClasses, useClassStore } from "../store/classStore";
 
-export function useClasses(schoolId: string) {
+export function useClasses(schoolId?: string) {
+  const isValid = !!schoolId;
+
   const {
     isLoading,
     error,
@@ -21,7 +23,9 @@ export function useClasses(schoolId: string) {
   } = useClassStore();
 
   const filteredClasses = useClassStore(
-    useShallow(selectFilteredClasses(schoolId)),
+    useShallow((state) =>
+      isValid ? selectFilteredClasses(schoolId)(state) : [],
+    ),
   );
 
   const fetchClasses = useCallback(async () => {
