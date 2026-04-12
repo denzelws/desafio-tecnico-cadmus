@@ -109,7 +109,8 @@ export const SchoolCard: React.FC<SchoolCardProps> = ({ school, onDelete }) => {
             trigger={(triggerProps: any) => (
               <GPressable
                 {...triggerProps}
-                p="$1"
+                p="$3"
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 testID={`school-menu-${school.id}`}
               >
                 <Ionicons
