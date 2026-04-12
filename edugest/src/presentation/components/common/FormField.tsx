@@ -61,6 +61,8 @@ export const FormField: React.FC<FormFieldProps> = ({
                 }
               }}
               onBlur={onBlur}
+              blurOnSubmit={false}
+              returnKeyType="done"
               keyboardType={isNumeric ? "numeric" : "default"}
               testID={testID}
               color={colors.on_surface}

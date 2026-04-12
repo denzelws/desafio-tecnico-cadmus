@@ -65,7 +65,7 @@ export default function SchoolsScreen() {
       ) : (
         <FlatList
           data={schools}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
           renderItem={({ item }) => (
             <SchoolCard school={item} onDelete={deleteSchool} />
           )}
