@@ -1,10 +1,13 @@
 import { config } from "@gluestack-ui/config";
 import { GluestackUIProvider } from "@gluestack-ui/themed";
+import Constants from "expo-constants";
 import { Stack } from "expo-router";
 import "react-native-get-random-values";
 import "react-native-url-polyfill/auto";
 
-if (__DEV__) {
+const useMSW = Constants.expoConfig?.extra?.useMSW === true;
+
+if (useMSW) {
   import("@/infrastructure/mock/server")
     .then(({ server }) => {
       server.listen({ onUnhandledRequest: "bypass" });
