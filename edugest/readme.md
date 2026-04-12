@@ -1,5 +1,3 @@
-# 📄 README.md
-
 ````markdown
 # EduGest+ - Gestão de Escolas e Turmas
 
@@ -35,7 +33,8 @@ Aplicativo mobile para gestão de escolas públicas e suas turmas.
 - **UI**: Gluestack UI
 - **Estado**: Zustand (com persistência AsyncStorage)
 - **Validação**: Zod + React Hook Form
-- **Mock API**: MSW (Mock Service Worker)
+- **Mock API (desenvolvimento)**: MirageJS
+- **Mock API (testes)**: MSW (Mock Service Worker)
 - **Testes**: Jest
 
 ---
@@ -75,6 +74,39 @@ npx expo start --ios
 npx expo start --web
 ```
 
+> **Nota**: O servidor MirageJS é iniciado automaticamente em modo de desenvolvimento (`__DEV__`), interceptando todas as requisições HTTP com dados mockados.
+
+---
+
+## 🪟 Configuração para WSL (Windows Subsystem for Linux)
+
+Se você está desenvolvendo via WSL2, é necessário configurar o modo de rede espelhado para que dispositivos físicos consigam se conectar ao servidor de desenvolvimento.
+
+### 1. Criar/editar o arquivo `.wslconfig`
+
+No PowerShell (Windows), edite o arquivo em `%USERPROFILE%\.wslconfig`:
+
+```ini
+[wsl2]
+networkingMode=mirrored
+[experimental]
+hostAddressLoopback=true
+```
+
+### 2. Reiniciar o WSL
+
+```powershell
+wsl --shutdown
+```
+
+### 3. Abrir o Firewall do Hyper-V (PowerShell como Administrador)
+
+```powershell
+Set-NetFirewallHyperVVMSetting -Name '{40E0AC32-46A5-438A-A0B2-2B479E8F2E90}' -DefaultInboundAction Allow
+```
+
+Após isso, `npx expo start` exibirá o IP correto da sua rede local e o QR code funcionará normalmente com o Expo Go.
+
 ---
 
 ## 🧪 Executar Testes
@@ -104,8 +136,9 @@ src/
 │   ├── entities/      # Tipos TypeScript
 │   └── schemas/       # Zod schemas (validação)
 ├── infrastructure/    # Infraestrutura
-│   ├── api/           # Cliente HTTP
-│   └── mock/          # MSW mocks
+│   ├── api/           # Cliente HTTP (Axios)
+│   ├── mirage/        # MirageJS server (desenvolvimento)
+│   └── mock/          # MSW handlers (testes)
 ├── lib/               # Configurações de libs
 └── presentation/      # Camada de apresentação
     ├── components/    # Componentes React
@@ -156,4 +189,10 @@ MIT License
 
 ```
 
+**Alterações feitas:**
+
+- Seção **Tecnologias**: separou Mock API em desenvolvimento (MirageJS) e testes (MSW)
+- Adicionada nota sobre o MirageJS ser iniciado automaticamente em `__DEV__`
+- Adicionada seção **Configuração para WSL** com os passos do mirrored mode
+- Seção **Estrutura do Projeto**: adicionada pasta `mirage/` na infraestrutura e descrições mais precisas
 ```
