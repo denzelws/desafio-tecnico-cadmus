@@ -180,19 +180,3 @@ Crie um arquivo `.env` se necessário:
 ```env
 API_URL=http://localhost:3000/api
 ```
-
----
-
-## 📄 Licença
-
-MIT License
-
-```
-
-**Alterações feitas:**
-
-- Seção **Tecnologias**: separou Mock API em desenvolvimento (MirageJS) e testes (MSW)
-- Adicionada nota sobre o MirageJS ser iniciado automaticamente em `__DEV__`
-- Adicionada seção **Configuração para WSL** com os passos do mirrored mode
-- Seção **Estrutura do Projeto**: adicionada pasta `mirage/` na infraestrutura e descrições mais precisas
-```
