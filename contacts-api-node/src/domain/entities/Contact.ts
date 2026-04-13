@@ -1,5 +1,6 @@
 import { Gender } from "../enums/Gender";
 import { DomainException } from "../exceptions/DomainException";
+import crypto from "crypto";
 
 export interface IContact {
   id: string;
