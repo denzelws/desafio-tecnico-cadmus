@@ -8,10 +8,13 @@ export const createContactSchema = yup.object({
   birthDate: yup
     .string()
     .required("Data de nascimento é obrigatória")
-    .test("is-past-date", "Data de nascimento não pode ser futura", (value) => {
+    .test("is-past-date", "Data de nascimento não pode ser maior ou igual à data de hoje", (value) => {
       if (!value) return false;
       const date = new Date(value);
-      return date < new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      date.setHours(0, 0, 0, 0);
+      return date < today;
     }),
   gender: yup
     .number()
