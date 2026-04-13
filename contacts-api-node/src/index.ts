@@ -2,6 +2,7 @@ import "dotenv/config";
 import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import contactsRoutes from "./presentation/routes/contactsRoutes";
+import { errorMiddleware } from "./middleware/errorMiddleware";
 
 const app: Express = express();
 
@@ -13,6 +14,8 @@ app.get("/health", (req: Request, res: Response) => {
 });
 
 app.use("/api/contacts", contactsRoutes);
+
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 
