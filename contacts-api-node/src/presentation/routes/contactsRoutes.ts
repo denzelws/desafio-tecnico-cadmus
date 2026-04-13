@@ -1,14 +1,15 @@
 import { Router } from "express";
-import { ContactsController } from "../controllers/ContactsController";
+import { getAll, getById, create, update, deactivate, deleteContact } from "../controllers/ContactsController";
+import { validate } from "../../middleware/validateMiddleware";
+import { createContactSchema, updateContactSchema } from "../../application/validators/contactValidator";
 
 const router = Router();
-const controller = new ContactsController();
 
-router.get("/", controller.getAll.bind(controller));
-router.get("/:id", controller.getById.bind(controller));
-router.post("/", controller.create.bind(controller));
-router.put("/:id", controller.update.bind(controller));
-router.patch("/:id/deactivate", controller.deactivate.bind(controller));
-router.delete("/:id", controller.delete.bind(controller));
+router.get("/", getAll);
+router.get("/:id", getById);
+router.post("/", validate(createContactSchema), create);
+router.put("/:id", validate(updateContactSchema), update);
+router.patch("/:id/deactivate", deactivate);
+router.delete("/:id", deleteContact);
 
 export default router;
