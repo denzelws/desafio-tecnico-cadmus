@@ -1,72 +1,107 @@
+import { ContactModel, IContactDocument } from "../database/schemas/ContactSchema";
 import { Contact } from "../../domain/entities/Contact";
-import { IContactService } from "../../application/interfaces/IContactService";
-import { CreateContactDto, UpdateContactDto, ContactResponseDto, PagedResultDto } from "../../application/dtos/ContactDto";
+import { Gender } from "../../domain/enums/Gender";
+import { DomainException } from "../../domain/exceptions/DomainException";
 
-export class ContactRepository implements IContactService {
-  private contacts: Contact[] = [];
+export class ContactRepository {
+  public async getAll(page: number = 1, pageSize: number = 10): Promise<{ items: any[]; totalCount: number }> {
+    const skip = (page - 1) * pageSize;
+    
+    const [items, totalCount] = await Promise.all([
+      ContactModel.find({ isActive: true }).skip(skip).limit(pageSize).lean(),
+      ContactModel.countDocuments({ isActive: true })
+    ]);
 
-  async getAll(page: number, pageSize: number): Promise<PagedResultDto> {
-    const activeContacts = this.contacts.filter(c => c.isActive);
-    const totalCount = activeContacts.length;
-
-    const items = activeContacts
-      .slice((page - 1) * pageSize, page * pageSize)
-      .map(this.toResponseDto);
-
-    return { items, totalCount, page, pageSize };
-  }
-
-  async getById(id: string): Promise<ContactResponseDto> {
-    const contact = this.contacts.find(c => c.id === id && c.isActive);
-    if (!contact) {
-      throw new Error(`Contato ${id} não encontrado ou inativo.`);
-    }
-    return this.toResponseDto(contact);
-  }
-
-  async create(dto: CreateContactDto): Promise<ContactResponseDto> {
-    const birthDate = new Date(dto.birthDate);
-    const contact = Contact.create(dto.name, birthDate, dto.gender);
-    this.contacts.push(contact);
-    return this.toResponseDto(contact);
-  }
-
-  async update(id: string, dto: UpdateContactDto): Promise<ContactResponseDto> {
-    const contact = this.contacts.find(c => c.id === id && c.isActive);
-    if (!contact) {
-      throw new Error(`Contato ${id} não encontrado ou inativo.`);
-    }
-    const birthDate = new Date(dto.birthDate);
-    contact.update(dto.name, birthDate, dto.gender);
-    return this.toResponseDto(contact);
-  }
-
-  async deactivate(id: string): Promise<void> {
-    const contact = this.contacts.find(c => c.id === id);
-    if (!contact) {
-      throw new Error(`Contato ${id} não encontrado.`);
-    }
-    contact.deactivate();
-  }
-
-  async delete(id: string): Promise<void> {
-    const index = this.contacts.findIndex(c => c.id === id);
-    if (index === -1) {
-      throw new Error(`Contato ${id} não encontrado.`);
-    }
-    this.contacts.splice(index, 1);
-  }
-
-  private toResponseDto(contact: Contact): ContactResponseDto {
     return {
-      id: contact.id,
+      items: items.map(this.toResponseDto),
+      totalCount
+    };
+  }
+
+  public async getById(id: string): Promise<any> {
+    const contact = await ContactModel.findOne({ _id: id, isActive: true }).lean();
+    if (!contact) {
+      throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
+    }
+    return this.toResponseDto(contact);
+  }
+
+  public async create(data: { name: string; birthDate: Date; gender: Gender }): Promise<any> {
+    const contact = Contact.create(data.name, data.birthDate, data.gender);
+    
+    const doc = new ContactModel({
+      _id: contact.id,
       name: contact.name,
-      birthDate: contact.birthDate.toISOString(),
-      age: contact.age,
+      birthDate: contact.birthDate,
       gender: contact.gender,
       isActive: contact.isActive,
-      createdAt: contact.createdAt.toISOString(),
-      updatedAt: contact.updatedAt?.toISOString() || null
+      createdAt: contact.createdAt,
+      updatedAt: contact.updatedAt
+    });
+    
+    await doc.save();
+    return this.toResponseDto(doc);
+  }
+
+  public async update(id: string, data: { name: string; birthDate: Date; gender: Gender }): Promise<any> {
+    const contactDoc = await ContactModel.findOne({ _id: id, isActive: true });
+    if (!contactDoc) {
+      throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
+    }
+
+    const contact = Contact.create(contactDoc.name, contactDoc.birthDate, contactDoc.gender as Gender);
+    contact.update(data.name, data.birthDate, data.gender);
+
+    contactDoc.name = data.name;
+    contactDoc.birthDate = data.birthDate;
+    contactDoc.gender = data.gender;
+    contactDoc.updatedAt = new Date();
+
+    await contactDoc.save();
+    return this.toResponseDto(contactDoc);
+  }
+
+  public async deactivate(id: string): Promise<void> {
+    const contact = await ContactModel.findById(id);
+    if (!contact) {
+      throw new DomainException(`Contato ${id} não encontrado.`);
+    }
+
+    if (!contact.isActive) {
+      throw new DomainException("Contato já está inativo.");
+    }
+
+    contact.isActive = false;
+    contact.updatedAt = new Date();
+    await contact.save();
+  }
+
+  public async delete(id: string): Promise<void> {
+    const contact = await ContactModel.findById(id);
+    if (!contact) {
+      throw new DomainException(`Contato ${id} não encontrado.`);
+    }
+    await ContactModel.deleteOne({ _id: id });
+  }
+
+  private toResponseDto(doc: any): any {
+    const birthDate = new Date(doc.birthDate);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return {
+      id: doc._id,
+      name: doc.name,
+      birthDate: doc.birthDate.toISOString(),
+      age,
+      gender: doc.gender,
+      isActive: doc.isActive,
+      createdAt: doc.createdAt?.toISOString() || doc.createdAt,
+      updatedAt: doc.updatedAt?.toISOString() || null
     };
   }
 }
