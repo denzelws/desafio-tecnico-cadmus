@@ -121,12 +121,3 @@ dotnet test
 | Data de Nascimento | Não pode ser futura             |
 | Idade              | Deve ser maior de idade (≥18)   |
 | Gênero             | Male(1), Female(2), Other(3)    |
-
-## 📄 Licença
-
-MIT
-
-```
-
----
-```
