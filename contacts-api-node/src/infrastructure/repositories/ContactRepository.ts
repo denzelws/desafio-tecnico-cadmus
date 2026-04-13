@@ -1,9 +1,30 @@
-import { ContactModel, IContactDocument } from "../database/schemas/ContactSchema";
-import { Contact } from "../../domain/entities/Contact";
-import { Gender } from "../../domain/enums/Gender";
+import { ContactModel } from "../database/schemas/ContactSchema";
 import { DomainException } from "../../domain/exceptions/DomainException";
+import mongoose from "mongoose";
 
 export class ContactRepository {
+  private validateAge(birthDate: Date): void {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    if (age < 18) {
+      throw new DomainException("O contato deve ser maior de idade.");
+    }
+  }
+
+  private validateName(name: string): void {
+    if (!name || name.trim().length === 0) {
+      throw new DomainException("Nome é obrigatório.");
+    }
+    if (name.length > 150) {
+      throw new DomainException("Nome não pode ultrapassar 150 caracteres.");
+    }
+  }
+
   public async getAll(page: number = 1, pageSize: number = 10): Promise<{ items: any[]; totalCount: number }> {
     const skip = (page - 1) * pageSize;
     
@@ -19,6 +40,9 @@ export class ContactRepository {
   }
 
   public async getById(id: string): Promise<any> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
+    }
     const contact = await ContactModel.findOne({ _id: id, isActive: true }).lean();
     if (!contact) {
       throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
@@ -26,33 +50,37 @@ export class ContactRepository {
     return this.toResponseDto(contact);
   }
 
-  public async create(data: { name: string; birthDate: Date; gender: Gender }): Promise<any> {
-    const contact = Contact.create(data.name, data.birthDate, data.gender);
-    
+  public async create(data: { name: string; birthDate: Date; gender: number }): Promise<any> {
+    this.validateName(data.name);
+    this.validateAge(data.birthDate);
+
     const doc = new ContactModel({
-      _id: contact.id,
-      name: contact.name,
-      birthDate: contact.birthDate,
-      gender: contact.gender,
-      isActive: contact.isActive,
-      createdAt: contact.createdAt,
-      updatedAt: contact.updatedAt
+      name: data.name.trim(),
+      birthDate: data.birthDate,
+      gender: data.gender,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: null
     });
     
     await doc.save();
     return this.toResponseDto(doc);
   }
 
-  public async update(id: string, data: { name: string; birthDate: Date; gender: Gender }): Promise<any> {
+  public async update(id: string, data: { name: string; birthDate: Date; gender: number }): Promise<any> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
+    }
+    
+    this.validateName(data.name);
+    this.validateAge(data.birthDate);
+
     const contactDoc = await ContactModel.findOne({ _id: id, isActive: true });
     if (!contactDoc) {
       throw new DomainException(`Contato ${id} não encontrado ou inativo.`);
     }
 
-    const contact = Contact.create(contactDoc.name, contactDoc.birthDate, contactDoc.gender as Gender);
-    contact.update(data.name, data.birthDate, data.gender);
-
-    contactDoc.name = data.name;
+    contactDoc.name = data.name.trim();
     contactDoc.birthDate = data.birthDate;
     contactDoc.gender = data.gender;
     contactDoc.updatedAt = new Date();
@@ -62,6 +90,9 @@ export class ContactRepository {
   }
 
   public async deactivate(id: string): Promise<void> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new DomainException(`Contato ${id} não encontrado.`);
+    }
     const contact = await ContactModel.findById(id);
     if (!contact) {
       throw new DomainException(`Contato ${id} não encontrado.`);
@@ -77,6 +108,9 @@ export class ContactRepository {
   }
 
   public async delete(id: string): Promise<void> {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new DomainException(`Contato ${id} não encontrado.`);
+    }
     const contact = await ContactModel.findById(id);
     if (!contact) {
       throw new DomainException(`Contato ${id} não encontrado.`);
@@ -94,7 +128,7 @@ export class ContactRepository {
     }
 
     return {
-      id: doc._id,
+      id: doc._id.toString(),
       name: doc.name,
       birthDate: doc.birthDate.toISOString(),
       age,
