@@ -2,10 +2,11 @@
   "name": "contacts-api-node",
   "version": "1.0.0",
   "description": "Contacts API with Node.js and MongoDB",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
     "test": "jest",
     "test:watch": "jest --watch"
   },
@@ -17,7 +18,14 @@
     "cors": "^2.8.5"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.0",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
     "jest": "^29.7.0",
-    "nodemon": "^3.0.0"
+    "nodemon": "^3.0.0",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
   }
 }
